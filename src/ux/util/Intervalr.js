@@ -36,7 +36,7 @@
         }
     });
 
-    // Setup some extra listeners on defined interval
+    // Setup some extra listeners
     Intervalr.addListeners('yourinervalname', {
         scope: this,
         statuschange: this.onStatusChangeListener,
@@ -47,7 +47,7 @@
     Intervalr.start('yourinervalname');
     
     // Set paused
-    Intervalr.pause('yourinervalname', true);
+    Intervalr.pause('yourinervalname');
 
     // Inverse paused value
     Intervalr.toggle('yourinervalname');

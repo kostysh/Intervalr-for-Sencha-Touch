@@ -51,7 +51,7 @@ Installing:
             }
         });
 
-- Setup some extra listeners on defined interval:
+- Setup some extra listeners:
 <!-- language: lang-js -->
         
         Intervalr.addListeners('yourinervalname', {
@@ -68,7 +68,7 @@ Installing:
 - Set paused:
 <!-- language: lang-js -->
         
-        Intervalr.pause('yourinervalname', true);
+        Intervalr.pause('yourinervalname');
 
 - Inverse paused value:
 <!-- language: lang-js -->
