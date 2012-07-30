@@ -6,7 +6,7 @@
  * @author Constantine V. Smirnov kostysh(at)gmail.com
  * @date 20120727
  * @version 1.0
- * @license  GNU GPL v3.0
+ * @license GNU GPL v3.0
  *
  * @requires Sencha Touch 2.0
  * @requires Ext.mixin.Observable

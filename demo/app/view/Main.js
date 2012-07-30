@@ -51,7 +51,7 @@ Ext.define('Intervalr.view.Main', {
                       '<p>Version: 1.0</p>' +
                       '<p>Author: Constantine Smirnov, <a href="http://mindsaur.com">http://mindsaur.com</a></p>' +
                       '<p>License: GNU GPL v3.0</p>' +
-                      '<p>GitHub: <a href="Intervalr-for-Sencha-Touch">Intervalr-for-Sencha-Touch</a></p>',
+                      '<p>GitHub: <a href="https://github.com/kostysh/Intervalr-for-Sencha-Touch">Intervalr-for-Sencha-Touch</a></p>',
                 scrollable: 'vertical'
             }
         ]
