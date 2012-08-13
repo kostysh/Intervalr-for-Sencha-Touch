@@ -4,13 +4,14 @@
  * @fileOverview Util to manage javascript intervals
  *
  * @author Constantine V. Smirnov kostysh(at)gmail.com
- * @date 20120727
- * @version 1.0
- * @license  GNU GPL v3.0
+ * @date 20120813
+ * @version 1.1
+ * @license GNU GPL v3.0
  *
  * @requires Sencha Touch 2.0
  * @requires Ext.mixin.Observable
  * @requires Ext.util.AbstractMixedCollection
+ * @requires Ext.ux.util.Interval
  * 
  * Usage:
     
@@ -126,8 +127,8 @@ Ext.define('Ext.ux.util.Intervalr', {
     
     /**
      * Add new interval to collection and start it
-     * @param {string} name Interval name
-     * @param {object} config Interval configuration object
+     * @param {String} name Interval name
+     * @param {Object} config Interval configuration object
      */
     add: function(name, config) {
         var me = this;
@@ -136,6 +137,7 @@ Ext.define('Ext.ux.util.Intervalr', {
             var interval = me.collection.add(name, 
                 Ext.create('Ext.ux.util.Interval', {
                     name: name,
+                    sequential: config.sequential || false,
                     times: config.times || me.getTimes(),
                     timeout: config.timeout || me.getTimeout()
             }));
@@ -153,7 +155,7 @@ Ext.define('Ext.ux.util.Intervalr', {
     
     /**
      * Start interval by name
-     * @method
+     * @method start
      * @param {String} name Interval name
      */
     start: function(name) {
@@ -162,7 +164,7 @@ Ext.define('Ext.ux.util.Intervalr', {
     
     /**
      * Stop interval by name
-     * @method
+     * @method stop
      * @param {String} name Interval name
      */
     stop: function(name) {
@@ -171,7 +173,7 @@ Ext.define('Ext.ux.util.Intervalr', {
     
     /**
      * Pause interval by name
-     * @method
+     * @method pause
      * @param {String} name Interval name
      */
     pause: function(name) {
@@ -180,7 +182,7 @@ Ext.define('Ext.ux.util.Intervalr', {
     
     /**
      * Resume interval by name
-     * @method
+     * @method resume
      * @param {String} name Interval name
      */
     resume: function(name) {
@@ -188,8 +190,17 @@ Ext.define('Ext.ux.util.Intervalr', {
     },
     
     /**
+     * Set ready status for interval
+     * @method ready
+     * @param {String} name Interval name
+     */
+    ready: function(name) {
+        this.collection.get(name).setReady(true);
+    },
+    
+    /**
      * Inverse paused property value for interval
-     * @method
+     * @method toggle
      * @param {string} name Interval name
      */
     toggle: function(name) {
@@ -198,7 +209,7 @@ Ext.define('Ext.ux.util.Intervalr', {
     
     /**
      * Remove interval by name
-     * @method
+     * @method remove
      * @param {String} name Interval name
      */
     remove: function(name) {
@@ -208,26 +219,54 @@ Ext.define('Ext.ux.util.Intervalr', {
     
     /**
      * Add listeners to interval
-     * @method
-     * @param {String} name Interval name
+     * @method addListeners
+     * @param {String/Object} name Interval name or config
      * @param {Object} config Listeners config
      */
-    addListeners: function(name, config) {
+    addListeners: function() {
         var me = this;
+        var name, config;
         
-        if (Ext.isObject(config)) {
-            me.collection.get(name).on(config);
+        if (arguments.length === 1 && 
+            Ext.isObject(arguments[0]) && 
+            Ext.isDefined(arguments[0].name)) {
+            
+            name = arguments[0].name;
+            config = arguments[0];
+        } else if (arguments.length === 2) {
+            name = arguments[0];
+            config = arguments[1];
         } else {
             me.fireEvent('exception', {
-                message: 'Wrong interval listener',
+                message: 'Wrong interval config',
+                time: new Date()
+            }, me);
+            
+            return;
+        }
+        
+        var interval = me.collection.get(name);
+        if (interval) {
+            interval.on(config);
+        } else {
+            me.fireEvent('exception', {
+                message: 'Interval with name: ['+name+'] not registered',
                 time: new Date()
             }, me);
         }
     },
     
     /**
+     * Shotrcut to addListeners
+     * @method on
+     */
+    on: function() {
+        this.addListeners.apply(this, arguments);
+    },
+    
+    /**
      * Start all intervals
-     * @method
+     * @method startAll
      * @param {String} name Interval name
      */
     startAll: function() {
@@ -240,7 +279,7 @@ Ext.define('Ext.ux.util.Intervalr', {
     
     /**
      * Stop all intervals
-     * @method
+     * @method stopAll
      */
     stopAll: function() {
         var me = this;
@@ -252,7 +291,7 @@ Ext.define('Ext.ux.util.Intervalr', {
     
     /**
      * Clear all intervals
-     * @method
+     * @method removeAll
      */
     removeAll: function() {
         var me = this;

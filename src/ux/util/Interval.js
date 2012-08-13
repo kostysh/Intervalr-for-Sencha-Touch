@@ -4,8 +4,8 @@
  * @fileOverview Interval object class
  *
  * @author Constantine V. Smirnov kostysh(at)gmail.com
- * @date 20120727
- * @version 1.0
+ * @date 20120813
+ * @version 1.1
  * @license GNU GPL v3.0
  *
  * @requires Sencha Touch 2.0
@@ -75,11 +75,56 @@ Ext.define('Ext.ux.util.Interval', {
     interval: null,
     
     config: {
+        /**
+         * Interval name
+         * @cfg {String} name
+         */
         name: '',
+        
+        /**
+         * Sequential interval mode flag
+         * @cfg {Boolean} sequential
+         */
+        sequential: false,
+        
+        /**
+         * Ready flag for sequential mode
+         * @cfg {Boolean} ready
+         * @private
+         */
+        ready: true,
+        
+        /**
+         * Is interval started flag
+         * @cfg {Boolean} started
+         * @private
+         */
         started: false,
+        
+        /**
+         * Is interval paused flag
+         * @cfg {Boolean} paused
+         * @private
+         */
         paused: true,
+        
+        /**
+         * Is interval removed flag
+         * @cfg {Boolean} removed
+         * @private
+         */
         removed: false,
+        
+        /**
+         * How many time interval should be fired
+         * @cfg {Numeric} times -1 for infinity
+         */
         times: -1,
+        
+        /**
+         * Interval timeout
+         * @cfg {Integer} timeout Milliseconds
+         */
         timeout: 1000
     },
     
@@ -92,6 +137,11 @@ Ext.define('Ext.ux.util.Interval', {
         return me;
     },
     
+    /**
+     * Create interval
+     * @method create
+     * @param {Integer} timeout
+     */
     create: function(timeout) {
         var me = this;
         me.interval = window.setInterval(function() {
@@ -99,6 +149,10 @@ Ext.define('Ext.ux.util.Interval', {
         }, timeout);
     },
     
+    /**
+     * Remove interval
+     * @method remove
+     */
     remove: function() {
         var me = this;
         
@@ -109,20 +163,35 @@ Ext.define('Ext.ux.util.Interval', {
         me.fireEvent('remove', me);
     },
     
+    /**
+     * Start interval
+     * @method start
+     */
     start: function() {
-        this.setPaused(false);
+        var me = this;
+        me.setPaused(false);
+        me.doExecute();
     },
     
+    /**
+     * Stop interval
+     * @method stop
+     */
     stop: function() {
         this.setPaused(true);
     },
     
+    /**
+     * Pause interval. Shortcut to stop method
+     * @method pause
+     */
     pause: function() {
         this.stop();
     },
     
     /**
      * Restore times value and start interval
+     * @method resume
      */
     resume: function() {
         var me = this;
@@ -131,6 +200,10 @@ Ext.define('Ext.ux.util.Interval', {
         me.fireAction('resume', [me], me.start);
     },
     
+    /**
+     * Toggle start/stop status
+     * @method toggle
+     */
     toggle: function() {
         var me = this;
         var paused = me.getPaused();
@@ -142,6 +215,9 @@ Ext.define('Ext.ux.util.Interval', {
         }
     },
     
+    /**
+     * @private
+     */
     updateTimeout: function(newTimeout, oldTimeout) {
         var me = this;
         
@@ -154,6 +230,9 @@ Ext.define('Ext.ux.util.Interval', {
         }
     },
     
+    /**
+     * @private
+     */
     updateStarted: function(started) {
         var me = this;
         
@@ -164,6 +243,9 @@ Ext.define('Ext.ux.util.Interval', {
         }
     },
     
+    /**
+     * @private
+     */
     updatePaused: function(paused) {
         var me = this;
         
@@ -177,10 +259,19 @@ Ext.define('Ext.ux.util.Interval', {
         }
     },
     
+    /**
+     * Execute action for interval
+     * @method doExecute
+     * @private
+     */
     doExecute: function() {
         var me = this;
         
         if (me.getPaused() || me.getRemoved()) {
+            return;
+        }
+        
+        if (me.getSequential() && !me.getReady()) {
             return;
         }
         
@@ -196,8 +287,17 @@ Ext.define('Ext.ux.util.Interval', {
         }
     },
     
+    /**
+     * Change current times property
+     * @method changeTimes
+     */
     changeTimes: function() {
         var me = this;
+        
+        if (me.getSequential()) {
+            me.setReady(false);
+        }
+        
         var times = me.getTimes();
         
         if (times !== -1) {
