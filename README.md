@@ -11,8 +11,8 @@ ST2 SDK Tools: 2.0.0 Beta 3
 
 Versions:
 =========
-1.1 New feature: sequential intervals
-1.0 Initial release
+- 1.1 New feature: sequential intervals  
+- 1.0 Initial release
 
 Features:
 =========
